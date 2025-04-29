@@ -25,6 +25,20 @@ builder.Services.AddAuthentication("Bearer")
         };
     });
 
+#region segredo
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "teste");
+    });
+
+    options.AddPolicy("SomenteAdmin", policy =>
+        policy.RequireClaim("role", "admin").RequireClaim("sub","1"));
+});
+#endregion
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -37,8 +51,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseAuthorization();
 
 app.MapControllers();

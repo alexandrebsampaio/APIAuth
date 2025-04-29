@@ -6,6 +6,9 @@ namespace APIAuth.Controllers
 {
     [ApiController]
     [Route("usuarios")]
+    #region segredo 02
+    //[Authorize(Policy = "ApiScope")]
+    #endregion
     public class UsuarioController : ControllerBase
     {
 
@@ -17,7 +20,12 @@ namespace APIAuth.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "usuario")]
+        #region segredo 01
+        //[Authorize]
+        #endregion
+        #region segredo 03
+        //[Authorize(Roles = "usuario")]
+        #endregion
         [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
         public IActionResult GetUsuarioID(int id)
         {
@@ -34,7 +42,8 @@ namespace APIAuth.Controllers
         [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
         public IActionResult GetUsuario()
         {
-
+            if (!int.TryParse(User.FindFirst("sub")?.Value, out int id))
+                return NotFound();
 
             var usuario = UsuarioRepository.Usuarios.FirstOrDefault(u => u.ID == id);
 
@@ -45,7 +54,7 @@ namespace APIAuth.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("/usuario/{id}")]
         [Authorize(Roles = "usuarioADM")]
         [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
         public IActionResult GetUsuarioADM(int id)
@@ -56,6 +65,19 @@ namespace APIAuth.Controllers
                 return NotFound();
 
             return Ok(usuario);
+        }
+
+        [HttpGet("all")]
+        [Authorize(Policy = "SomenteAdmin")]
+        [ProducesResponseType(typeof(IEnumerable<Usuario>), StatusCodes.Status200OK)]
+        public IActionResult GetUsuarioAll()
+        {
+            var usuarios = UsuarioRepository.Usuarios;
+
+            if (usuarios == null)
+                return NotFound();
+
+            return Ok(usuarios);
         }
     }
 }
