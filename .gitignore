@@ -54,3 +54,4 @@ TestResult.xml
 nunit-*.xml
 /APIAuth/.vs/APIAuth
 /.vs
+/APIAuth/.vs/ProjectEvaluation
