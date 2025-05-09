@@ -19,7 +19,8 @@ Essa aplicação foi utilizada como base para a palestra **"Segurança real em A
 
 ## ⚙️ Tecnologias
 
-- ASP.NET Core 7+
+- ASP.NET Core 8
+- [https://www.postman.com/](Postman para testes)
+ - [https://jwt.io](jwt.io) para destrinchar o token
 - JWT Bearer Authentication
 - Políticas de autorização com Claims
-- Postman para testes
