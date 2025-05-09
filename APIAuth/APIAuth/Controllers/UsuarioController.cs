@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace APIAuth.Controllers
 {
     [ApiController]
     [Route("usuarios")]
-    #region segredo 02
-    //[Authorize(Policy = "ApiScope")]
-    #endregion
+    [Authorize(Policy = "ApiScope")]
     public class UsuarioController : ControllerBase
     {
 
@@ -20,12 +19,7 @@ namespace APIAuth.Controllers
         }
 
         [HttpGet("{id}")]
-        #region segredo 01
-        //[Authorize]
-        #endregion
-        #region segredo 03
-        //[Authorize(Roles = "usuario")]
-        #endregion
+        [Authorize(Roles = "usuario")]
         [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
         public IActionResult GetUsuarioID(int id)
         {
@@ -42,11 +36,11 @@ namespace APIAuth.Controllers
         [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
         public IActionResult GetUsuario()
         {
-            if (!int.TryParse(User.FindFirst("sub")?.Value, out int id))
+            if (!int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int id))
                 return NotFound();
 
             var usuario = UsuarioRepository.Usuarios.FirstOrDefault(u => u.ID == id);
-
+             
             if (usuario == null)
                 return NotFound();
 
@@ -54,8 +48,8 @@ namespace APIAuth.Controllers
         }
 
 
-        [HttpGet("/usuario/{id}")]
-        [Authorize(Roles = "usuarioADM")]
+        [HttpGet("all/{id}")]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(typeof(Usuario), StatusCodes.Status200OK)]
         public IActionResult GetUsuarioADM(int id)
         {
@@ -68,7 +62,7 @@ namespace APIAuth.Controllers
         }
 
         [HttpGet("all")]
-        [Authorize(Policy = "SomenteAdmin")]
+        [Authorize(Policy = "SomenteAdmin1")]
         [ProducesResponseType(typeof(IEnumerable<Usuario>), StatusCodes.Status200OK)]
         public IActionResult GetUsuarioAll()
         {

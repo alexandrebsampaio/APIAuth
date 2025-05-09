@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,28 +18,30 @@ builder.Services.AddAuthentication("Bearer")
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
+            ValidateIssuer = false, // não valida o emissor
+            ValidateAudience = false, // não valida o público
+            ValidateLifetime = true, // valida o tempo de vida do token
+            ValidateIssuerSigningKey = true, // valida a chave de assinatura. * Mais importante do que vlaidar o emissor
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes("chave-super-secreta-para-desenvolvimento"))
         };
     });
 
-#region segredo
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("ApiScope", policy =>
     {
-        policy.RequireAuthenticatedUser();
-        policy.RequireClaim("scope", "teste");
+        policy.RequireAuthenticatedUser()
+            .RequireClaim("scope", "teste");
     });
 
-    options.AddPolicy("SomenteAdmin", policy =>
-        policy.RequireClaim("role", "admin").RequireClaim("sub","1"));
+    options.AddPolicy("SomenteAdmin1", policy =>
+    {
+        policy.RequireAuthenticatedUser()
+            .RequireRole("admin")
+            .RequireClaim(ClaimTypes.NameIdentifier, "1");
+    });
 });
-#endregion
 
 var app = builder.Build();
 

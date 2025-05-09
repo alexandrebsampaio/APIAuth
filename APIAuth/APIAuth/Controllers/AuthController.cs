@@ -29,9 +29,9 @@ namespace APIAuth.Controllers
                 new Claim("sub", usuario.ID.ToString()),
                 new Claim("name", usuario.Nome),
                 new Claim("email", usuario.Email),
-                //new Claim("scope", "teste"),
-                //new Claim(ClaimTypes.Role, "usuario"),
-                //new Claim(ClaimTypes.Role, "admin"),
+                new Claim("scope", "teste"),
+                new Claim(ClaimTypes.Role, "usuario"),
+                new Claim(ClaimTypes.Role, "admin"),
             }),
                 Expires = DateTime.UtcNow.AddMinutes(60),
                 SigningCredentials = new SigningCredentials(
